@@ -314,8 +314,8 @@ makeRequestHeader login password cnonce req (Digest dc) =
                   Just o -> return $ "opaque=\"" ++ o ++ "\"",
                 case qop dc of
                   Nothing -> mzero
-                  Just Auth -> return "qop=auth"
-                  Just AuthInt -> return "qop=auth-int",
+                  Just Auth -> return "qop=\"auth\""
+                  Just AuthInt -> return "qop=\"auth-int\"",
                 case qop dc of
                   Nothing -> mzero
                   Just _ -> return "nc=00000001"
