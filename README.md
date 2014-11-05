@@ -27,4 +27,4 @@ which has been updated to work with latest GHC and supporting
 libraries.
 
 I have modified the `qop` message in the digest auth request which has
-fixed a bug in my own use cases. See commit #a8d542cf.
+fixed a bug in my own use cases. See commit a8d542cf.
