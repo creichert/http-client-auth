@@ -1,9 +1,9 @@
 name:                http-client-auth
 version:             0.1.1.0
-synopsis:            HTTP authorization (both basic and digest) done right
+synopsis:            HTTP Basic and Digest Authentication for http-client.
 description:
 
-    HTTP Basic and Digest Authentication for http-client.
+    HTTP Basic and Digest Authentication for http-client and http-conduit.
 
     * Multiple challenges aren't implemented.
     * Authentication-Info header isn't either.
