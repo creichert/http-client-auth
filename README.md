@@ -11,7 +11,7 @@ HTTP Basic and Digest Authentication for `http-client` and `http-conduit`.
 
 ```
 $ cabal sandbox init
-$ cabal install --only-dep --allow-newer -j
+$ cabal install --only-dep
 ```
 
 ### Warning

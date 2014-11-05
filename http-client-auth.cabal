@@ -25,7 +25,7 @@ library
                      , blaze-builder    == 0.3.*
                      , bytestring       == 0.10.*
                      , case-insensitive == 1.2.*
-                     , conduit          == 1.2.*
+                     , conduit          >= 1.0
                      , crypto-conduit   == 0.5.*
                      , http-conduit     == 2.*
                      , mtl              == 2.*
