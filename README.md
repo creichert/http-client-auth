@@ -7,9 +7,11 @@ HTTP Basic and Digest Authentication for `http-client` and
 
 # Example
 
+```haskell
 > let url = "http://foo.com"
 > let handler = withManager . httpLbs
 > parseUrl url >>= runMaybeT . requestWithAuth "user" "pass" handler
+```
 
 # Build
 
@@ -25,4 +27,4 @@ which has been updated to work with latest GHC and supporting
 libraries.
 
 I have modified the `qop` message in the digest auth request which has
-fixed a bug in my own use cases. See commit a8d542c.
+fixed a bug in my own use cases. See commit #a8d542cf.
