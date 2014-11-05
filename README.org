@@ -1,6 +1,6 @@
 * http-client-auth
 
-[[http://travis-ci.org/creichert/http-client-auth][![Build Status](https://secure.travis-ci.org/creichert/http-client-auth.png?branch=master)]]
+[[https://travis-ci.org/creichert/http-client-auth][https://travis-ci.org/creichert/http-client-auth.png?branch=master]]
 
 HTTP Basic and Digest Authentication for `http-client` and `http-conduit`.
 
