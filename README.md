@@ -2,10 +2,8 @@
 
 [![Build Status](https://secure.travis-ci.org/creichert/http-client-auth.png?branch=master)](http://travis-ci.org/creichert/http-client-auth)
 
-HTTP Basic and Digest Authentication for `http-client` and `http-conduit`.
-
-***This repository is a fork of http-client-auth-0.1.0.0 which has
-   been modified to work with latest GHC and supporting libraries.***
+HTTP Basic and Digest Authentication for `http-client` and
+`http-conduit`.
 
 # Example
 
@@ -19,7 +17,12 @@ HTTP Basic and Digest Authentication for `http-client` and `http-conduit`.
 $ cabal sandbox init
 $ cabal install --only-dep
 ```
+***It may be necessary to use `--allow-newer` to build the package.***
 
-### Warning
+This repository is a fork of
+[http-client-auth-0.1.0.0](http://hackage.haskell.org/package/http-client-auth)
+which has been updated to work with latest GHC and supporting
+libraries.
 
-It may be necessary to use `--allow-newer` to build the package.
+I have modified the `qop` message in the digest auth request which has
+fixed a bug in my own use cases. See commit a8d542c.
