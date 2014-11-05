@@ -420,7 +420,7 @@ requestWithAuth login password query req = do
             let makeHeader = makeRequestHeader
                                            login
                                            password
-                                           "cnonce"
+                                           "cnonce" -- TODO set correctly
                                            req
                                            challenge
 
