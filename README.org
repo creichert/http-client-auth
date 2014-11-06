@@ -3,8 +3,8 @@
 [[https://travis-ci.org/creichert/http-client-auth][https://travis-ci.org/creichert/http-client-auth.png?branch=master]]
 
 HTTP Basic and Digest Authentication for
-[[http-client][https://github.com/snoyberg/http-client]] and
-[[http-conduit][https://github.com/snoyberg/http-client]].
+[[https://github.com/snoyberg/http-client][http-client]] and
+[[https://github.com/snoyberg/http-conduit][http-conduit]].
 
 * Example
 
@@ -21,7 +21,7 @@ HTTP Basic and Digest Authentication for
   cabal install --only-dep
 #+END_SRC
 
-/It may be necessary to use `--allow-newer` to build the package./
+/It may be necessary to use ~--allow-newer~ to build the package./
 
 This repository is a fork of [[http://hackage.haskell.org/package/http-client-auth][http-client-auth-0.1.0.0]] which has been
 updated to work with latest GHC and supporting libraries.
