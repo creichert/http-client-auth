@@ -292,6 +292,8 @@ parseDigestFields = do
              _ <- token `orElse` quotedStr
              return mempty
 
+
+
 parseBasicChallenge :: MaybeT (State String) BasicChallenge
 parseBasicChallenge = do
        basic <- token
@@ -311,6 +313,7 @@ parseBasicChallenge = do
                   parseRealm
 
 
+
 -- | This function parses the WWW-Authenticate header line to get a challenge.
 --
 -- If it fails, it's probably because the header is malformed
@@ -318,6 +321,7 @@ parseChallenge :: String -> Maybe Challenge
 parseChallenge header =
     flip evalState header $ runMaybeT $
     fmap Basic parseBasicChallenge `orElse` fmap Digest parseDigestChallenge
+
 
 
 -- | This function parses the response headers to get the challenge.
@@ -329,6 +333,7 @@ getChallenge req =
     case extractAuthHeader req of
       Nothing -> return None
       Just header -> parseChallenge header
+
 
 -- | This function creates a string that should be sent in the
 --   Authorization header.
