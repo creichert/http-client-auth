@@ -1,26 +1,30 @@
 module Network.HTTP.Client.Auth (
-      requestWithAuth
 
-    -- * High-level functions
-    , Challenge
+
+      -- * High-level functions
+      requestWithAuth
     , realm
     , getChallenge
     , makeRequestHeader
 
-    -- * Low-level functions
+      -- * Types
+    , Challenge
+
+      -- * Low-level functions
     , extractAuthHeader
     , parseChallenge
 
-    -- * Utils
+      -- * Utils
     , makeRequestUri
     , makeRequestBodyHash
     ) where
 
 import           Blaze.ByteString.Builder     (toLazyByteString)
 import           Codec.Binary.Base64.String   as B64 (encode)
+import           Control.Applicative          ((<$>), (<*>))
 import           Control.Monad                (guard, join, mplus, mzero)
 import           Control.Monad.Trans          (lift, liftIO)
-import           Control.Monad.Trans.Maybe    (MaybeT(MaybeT, runMaybeT),
+import           Control.Monad.Trans.Maybe    (MaybeT (MaybeT, runMaybeT),
                                                mapMaybeT)
 import           Control.Monad.Trans.Resource (ResourceT, runResourceT)
 import           Control.Monad.Trans.State    (State, evalState, get, put)
@@ -30,18 +34,22 @@ import qualified Data.ByteString.Lazy.UTF8    as LU (fromString)
 import qualified Data.ByteString.UTF8         as BU (fromString, toString)
 import           Data.CaseInsensitive         (mk)
 import           Data.Char                    (isAlphaNum, isAscii, isSpace)
-import           Data.Conduit                 (($$), (=$), yield)
+import           Data.Conduit                 (yield, ($$), (=$))
 import qualified Data.Conduit.List            as CL (concatMap, sourceList)
 import           Data.Digest.Pure.MD5         (MD5Digest, md5)
 import           Data.List                    (intersperse, isPrefixOf)
 import           Data.Maybe                   (catMaybes)
-import           Data.Monoid                  (Monoid(mappend, mconcat, mempty))
+import           Data.Monoid                  (Monoid (mappend, mconcat, mempty))
 import           Network.HTTP.Conduit
+
+
 
 data Once a = NotEncountered
             | Once a
             | Multiple
             deriving Show
+
+
 
 instance Monoid (Once a) where
     mempty = NotEncountered
@@ -51,19 +59,20 @@ instance Monoid (Once a) where
     Once _ `mappend` Multiple = Multiple
     Multiple `mappend` _ = Multiple
 
+
 onceToMaybe :: Once a -> Maybe (Maybe a)
 onceToMaybe NotEncountered = Just Nothing
 onceToMaybe (Once a) = Just (Just a)
 onceToMaybe Multiple = Nothing
 
--- multiple challenges, anyone?
 
--- | This is an abstract type representing the challenge sent by the
---   server.
+
+-- | challenge sent by the server.
 data Challenge = None
                | Basic BasicChallenge
                | Digest DigestChallenge
                deriving Show
+
 
 -- | Realm is the only thing users are supposed to know about the
 --   challenge.
@@ -72,8 +81,10 @@ realm None = Nothing
 realm (Basic bc) = Just $ basicRealm bc
 realm (Digest dc) = Just $ digestRealm dc
 
+
 newtype BasicChallenge = BasicChallenge { basicRealm :: String }
                        deriving Show
+
 
 data DigestChallenge = DigestChallenge
     { digestRealm :: String
@@ -85,6 +96,7 @@ data DigestChallenge = DigestChallenge
     , qop         :: Maybe QopValue
     } deriving Show
 
+
 data MDigestChallenge = MDigestChallenge
     { mDigestRealm :: Once String
     , mDomain      :: Once String
@@ -94,6 +106,7 @@ data MDigestChallenge = MDigestChallenge
     , mAlgorithm   :: Once DigestAlgorithm
     , mQop         :: Maybe QopValue
     } deriving Show
+
 
 instance Monoid MDigestChallenge where
     mempty = MDigestChallenge
@@ -118,46 +131,49 @@ instance Monoid MDigestChallenge where
                , mQop = mapp mQop
                }
 
+
 finDigestChallenge :: MDigestChallenge -> Maybe DigestChallenge
-finDigestChallenge md = do
-    _digestRealm <- join $ onceToMaybe $ mDigestRealm md
-    _domain <- onceToMaybe $ mDomain md
-    _nonce <- join $ onceToMaybe $ mNonce md
-    _opaque <- onceToMaybe $ mOpaque md
-    _stale <- onceToMaybe $ mStale md
-    _algorithm <- onceToMaybe $ mAlgorithm md
-    return DigestChallenge { digestRealm = _digestRealm
-                           , domain = _domain
-                           , nonce = _nonce
-                           , opaque = _opaque
-                           , stale = _stale
-                           , algorithm = _algorithm
-                           , qop = mQop md
-                           }
+finDigestChallenge md =
+    DigestChallenge
+    <$> (join $ onceToMaybe $ mDigestRealm md)
+    <*> (onceToMaybe $ mDomain md)
+    <*> (join $ onceToMaybe $ mNonce md)
+    <*> (onceToMaybe $ mOpaque md)
+    <*> (onceToMaybe $ mStale md)
+    <*> (onceToMaybe $ mAlgorithm md)
+    <*> Just (mQop md)
+
 
 data DigestAlgorithm = MD5
                      | MD5Sess
                      deriving Show
 
+
 data QopValue = Auth
               | AuthInt
               deriving Show
 
+
 instance Monoid QopValue where
     mempty = AuthInt
-    Auth `mappend` _ = Auth
+    Auth    `mappend` _ = Auth
     AuthInt `mappend` a = a
+
 
 -- | This function extracts a WWW-Authenticate header from the
 --   response.
 extractAuthHeader :: Response body -> Maybe String
 extractAuthHeader resp =
-    fmap BU.toString $
-    lookup (mk $ BU.fromString "WWW-Authenticate") $
-    responseHeaders resp
+    BU.toString
+    <$> lookup authheader headers
+  where
+    authheader = mk $ BU.fromString "WWW-Authenticate"
+    headers    = responseHeaders resp
+
 
 isWordChar :: Char -> Bool
 isWordChar c = isAscii c && (c `elem` "_.-:" || isAlphaNum c)
+
 
 orElse :: MaybeT (State String) a
        -> MaybeT (State String) a
@@ -165,6 +181,7 @@ orElse :: MaybeT (State String) a
 orElse p1 p2 = do
     str <- lift get
     p1 `mplus` (lift (put str) >> p2)
+
 
 token :: MaybeT (State String) String
 token = do
@@ -174,13 +191,16 @@ token = do
     lift $ put $ dropWhile isSpace rst
     return tok
 
+
 equal :: MaybeT (State String) ()
 equal = do '=' : rst <- lift get
            lift $ put $ dropWhile isSpace rst
 
+
 singleQuote :: MaybeT (State String) ()
 singleQuote = do '"' : rst <- lift get
                  lift $ put $ dropWhile isSpace rst
+
 quotedStr :: MaybeT (State String) String
 quotedStr =
     let getStr str =
@@ -290,6 +310,7 @@ parseBasicChallenge = do
                   _ <- token `orElse` quotedStr
                   parseRealm
 
+
 -- | This function parses the WWW-Authenticate header line to get a challenge.
 --
 -- If it fails, it's probably because the header is malformed
@@ -297,6 +318,7 @@ parseChallenge :: String -> Maybe Challenge
 parseChallenge header =
     flip evalState header $ runMaybeT $
     fmap Basic parseBasicChallenge `orElse` fmap Digest parseDigestChallenge
+
 
 -- | This function parses the response headers to get the challenge.
 --
