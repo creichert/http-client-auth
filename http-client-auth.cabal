@@ -2,12 +2,18 @@ name:                http-client-auth
 version:             0.1.1.0
 synopsis:            HTTP Basic and Digest Authentication for http-client.
 description:
-
     HTTP Basic and Digest Authentication for http-client and
     http-conduit.
-
+    .
+    <https://en.wikipedia.org/wiki/Http_Digest_Authentication Http Authentication>
+    .
     * Multiple challenges aren't implemented.
     * Authentication-Info header isn't either.
+    @
+    > let url = "http://foo.com"
+    > let handler = withManager . httpLbs
+    > parseUrl url >>= runMaybeT . requestWithAuth "user" "pass" handler
+    @
 
 license:             BSD3
 license-file:        LICENSE
@@ -34,3 +40,41 @@ library
                    , resourcet        >= 1.1   && < 2.0
                    , transformers     >= 0.2
                    , utf8-string      >= 0.3   && < 0.6
+
+
+
+-- documenation accuracy testing
+test-suite doctest
+  default-language: Haskell2010
+  ghc-options:      -Wall -Werror -threaded
+  hs-source-dirs:   tests
+  main-is:          DocTest.hs
+  type:             exitcode-stdio-1.0
+  build-depends:    base
+                  , doctest == 0.9.*
+                  , Glob    == 0.7.*
+
+
+
+-- documentation coverage
+test-suite haddock
+  main-is:          Haddock.hs
+  hs-source-dirs:   tests
+  ghc-options:      -Wall -Werror -threaded
+  type:             exitcode-stdio-1.0
+  default-language: Haskell2010
+  build-depends:    base
+                  , process
+                  , regex-compat
+
+
+-- static analysis
+test-suite hlint
+    main-is:          HLint.hs
+    ghc-options:      -Wall -Werror -threaded
+    hs-source-dirs:   tests
+    type:             exitcode-stdio-1.0
+    default-language: Haskell2010
+    build-depends:    base
+                    , hlint == 1.8.*
+                    , directory

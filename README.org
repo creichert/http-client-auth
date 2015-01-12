@@ -21,8 +21,6 @@ HTTP Basic and Digest Authentication for
   cabal install --only-dep
 #+END_SRC
 
-/It may be necessary to use ~--allow-newer~ to build the package./
-
 This repository is a fork of [[http://hackage.haskell.org/package/http-client-auth][http-client-auth-0.1.0.0]] which has been
 updated to work with latest GHC and supporting libraries.
 
