@@ -32,8 +32,7 @@ main = do
 arguments :: [String]
 arguments =
       [
-        "bench"
-      , "src"
+         "src"
       -- , "tests"
       -- , "ignore=Use map"
       -- , "quiet"

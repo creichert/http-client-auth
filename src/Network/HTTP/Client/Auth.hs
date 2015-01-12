@@ -1,5 +1,21 @@
-module Network.HTTP.Client.Auth (
+------------------------------------------------------------------------
+-- |
+-- Module      : HLint
+-- Description : HLint Static Analysis
+-- Copyright   : (c) Miguel Mitrofanov <miguelimo38@yandex.ru>
+-- License     : BSD3
+-- Maintainer  : Christopher Reichert <creichert07@gmail.com>
+-- Stability   : unstable
+-- Portability : POSIX
+--
+-- @
+-- > let url = "http://host.com"
+-- > let handler = withManager . httpLbs
+-- > parseUrl url >>= runMaybeT . requestWithAuth "user" "pass" handler
+-- @
 
+
+module Network.HTTP.Client.Auth (
 
       -- * High-level functions
       requestWithAuth
