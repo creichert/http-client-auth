@@ -57,15 +57,15 @@ test-suite doctest
 
 
 -- documentation coverage
-test-suite haddock
-  main-is:          Haddock.hs
-  hs-source-dirs:   test
-  ghc-options:      -Wall -threaded
-  type:             exitcode-stdio-1.0
-  default-language: Haskell2010
-  build-depends:    base
-                  , process
-                  , regex-compat
+-- test-suite haddock
+--   main-is:          Haddock.hs
+--   hs-source-dirs:   test
+--   ghc-options:      -Wall -threaded
+--   type:             exitcode-stdio-1.0
+--   default-language: Haskell2010
+--   build-depends:    base
+--                   , process
+--                   , regex-compat
 
 
 -- static analysis
