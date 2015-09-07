@@ -427,9 +427,7 @@ makeRequestUri :: Request -> String
 makeRequestUri req =
     let p = BU.toString $ path req
         pp = if "/" `isPrefixOf` p then p else '/' : p
-        q = BU.toString $ queryString req
-        qq = if "?" `isPrefixOf` q then q else '?' : q
-    in pp ++ qq
+    in pp
 
 -- | This function makes an MD5 hash of the request body
 makeRequestBodyHash :: Monad m => Request -> m String
