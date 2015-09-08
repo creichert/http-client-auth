@@ -368,7 +368,6 @@ makeRequestHeader login password cnonce req (Digest dc) = do
        entityBodyHash <- lift $ makeRequestBodyHash req
        let fields =
                [
-                return "Digest",
                 return $ "username=\"" ++ login ++ "\"",
                 return $ "realm=\"" ++ digestRealm dc ++ "\"",
                 return $ "nonce=\"" ++ nonce dc ++ "\"",
@@ -418,7 +417,7 @@ makeRequestHeader login password cnonce req (Digest dc) = do
            uri = makeRequestUri req
            mtd = BU.toString $ method req
            h = show . md5 . LU.fromString
-       return $ concat $ intersperse " " $ catMaybes fields
+       return $ concat $ "Digest " : intersperse ", " (catMaybes fields)
 
 -- | This function extracts URI part from the request.
 --
